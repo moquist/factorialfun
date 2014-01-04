@@ -32,6 +32,34 @@
        (recur (dec n) (*' n prod)))))
 
 (defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+  "Takes in two strings: the name of a fn to call, and the arg for
+   that fn.
+
+   Gets the symbol of the first string and resolves it to a namespace.
+
+   Gets the symbol of 'f, rebinds 'f to the symbol value.
+
+   Resolves 'f to the 'factorialfun.core namespace, rebinds 'f to the
+   resolved 'f, which should now be a fn from above.
+
+   ASSUMPTION: We aren't using fn? to verify that 'f is, in fact, a fn.
+
+   Calls 'f with 'n, using 'time to print out the elapsed time.
+
+   Finally, prints out the result.
+
+   Returns nil."
+  [f n]
+  (let [f (symbol f)
+        f (ns-resolve 'factorialfun.core f)
+        n (Integer. n)
+        factorial (time (f n))]
+    (println
+     "The factorial of" n "is"
+     factorial)))
+
+(comment
+  ;; You must test with strings.
+  (factorialfun.core/-main "f1" "4")
+  (factorialfun.core/-main "f2" "4")
+  )
