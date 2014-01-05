@@ -57,16 +57,19 @@
    Resolves 'f to the 'factorialfun.core namespace, rebinds 'f to the
    resolved 'f, which should now be a fn from above.
 
-   ASSUMPTION: We aren't using fn? to verify that 'f is, in fact, a fn.
+   Ensures that 'f implements IFn, throws exception (with a helpful
+   message) if not.
 
    Calls 'f with 'n, using 'time to print out the elapsed time.
 
    Finally, prints out the result.
 
    Returns nil."
-  [f n]
-  (let [f (symbol f)
+  [f-str n]
+  (let [f (symbol f-str)
         f (ns-resolve 'factorialfun.core f)
+        _ (if (not (ifn? f))
+            (throw (Exception. (str f-str " is not a function!"))))
         n (Integer. n)
         factorial (time (f n))]
     (println
