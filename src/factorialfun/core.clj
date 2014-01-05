@@ -1,12 +1,22 @@
 (ns factorialfun.core
   (:gen-class))
 
+(defn f0
+  "This is the same as f1, but uses the non-auto-promoting * instead of *'.
+   See http://clojuredocs.org/clojure_core/clojure.core/* and
+   http://clojuredocs.org/clojure_core/clojure.core/*'
+   ArithmeticException integer overflow at (f0 21)"
+  [n]
+  (if (= 1 n)
+    n
+    (* n (f0 (dec n)))))
+
 (defn f1
   "This is recursive, but consumes stack.
    Note that the recursive call only passes 'n, because the /result/ of the call is then multiplied by n after the fact.
    This cannot be done with tail-call-optimization (TCO), which is the only way to do recursion without consuming the stack.
 
-   Stack overflow (on my MBA) at (f1 8450)"
+   Stack overflow (on my MBA, 8G of RAM) at (f1 8450)"
   [n]
   (if (= 1 n)
     n
