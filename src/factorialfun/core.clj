@@ -7,6 +7,7 @@
    http://clojuredocs.org/clojure_core/clojure.core/*'
    ArithmeticException integer overflow at (f0 21)"
   [n]
+  (println :f0 :n n)
   (if (= 1 n)
     n
     (* n (f0 (dec n)))))
@@ -18,6 +19,7 @@
 
    Stack overflow (on my MBA, 8G of RAM) at (f1 8450)"
   [n]
+  (println :f1 :n n)
   (if (= 1 n)
     n
     (*' n (f1 (dec n)))))
@@ -30,13 +32,16 @@
    "
   ;; This arity-1 fn takes in our intial n, and makes *one*
   ;; non-TCO recursive call on the stack, to initialize our collecting var.
-  ([n] (f2 n 1))
+  ([n]
+     (println :f2 :n n)
+     (f2 n 1))
 
   ;; This arity-2 fn takes in our initial n and the initialized
   ;; collecting var "prod". 'recur re-binds n and prod as the
   ;; factorial is calculated, returning the final value of prod when n
   ;; is 1.
   ([n prod]
+     (println :f2 :n n :prod prod)
      (if (= 1 n)
        prod
        (recur (dec n) (*' n prod)))))
