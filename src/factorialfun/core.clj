@@ -1,7 +1,7 @@
 (ns factorialfun.core
   (:gen-class))
 
-(defn f0
+(defn ^:cli f0
   "This is the same as f1, but uses the non-auto-promoting * instead of *'.
    See http://clojuredocs.org/clojure_core/clojure.core/* and
    http://clojuredocs.org/clojure_core/clojure.core/*'
@@ -12,19 +12,19 @@
     n
     (* n (f0 (dec n)))))
 
-(defn f1
+(defn ^:cli f1
   "This is recursive, but consumes stack.
    Note that the recursive call only passes 'n, because the /result/ of the call is then multiplied by n after the fact.
    This cannot be done with tail-call-optimization (TCO), which is the only way to do recursion without consuming the stack.
 
-   Stack overflow (on my MBA, 8G of RAM) at (f1 8450)"
+   Stack overflow (on my MBA, 8G of RAM) at (f1 8352)"
   [n]
   (println :f1 :n n)
   (if (= 1 n)
     n
     (*' n (f1 (dec n)))))
 
-(defn f2
+(defn ^:cli f2
   "Works fine up to (e.g.) 80000, stopped testing.
    \"recur is the only non-stack-consuming looping construct in Clojure.\" (http://clojure.org/special_forms#recur)
    When you use 'recur, you need to re-bind a \"collecting\" var of some kind each time.
@@ -60,6 +60,11 @@
    Ensures that 'f implements IFn, throws exception (with a helpful
    message) if not.
 
+   Ensures that 'f is marked (according to our own metadata
+   convention) to be accessible from the CLI. See
+   http://clojure.org/metadata and
+   http://stackoverflow.com/questions/5592306/how-do-i-dynamically-find-metadata-for-a-clojure-function
+
    Calls 'f with 'n, using 'time to print out the elapsed time.
 
    Finally, prints out the result.
@@ -70,10 +75,12 @@
         f (ns-resolve 'factorialfun.core f)
         _ (if (not (ifn? f))
             (throw (Exception. (str f-str " is not a function!"))))
+        _ (or (:cli (meta f))
+              (throw (Exception. (str f-str " is not callable from the CLI."))))
         n (Integer. n)
         factorial (time (f n))]
     (println
-     "The factorial of" n "is"
+     f-str "of" n "is"
      factorial)))
 
 (comment
