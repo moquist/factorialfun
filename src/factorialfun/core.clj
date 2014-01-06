@@ -46,6 +46,26 @@
        prod
        (recur (dec n) (*' n prod)))))
 
+
+(def f3-seq
+  ;; Creates a lazy sequence of factorials.
+  ;; With apologies to http://en.wikibooks.org/wiki/Clojure_Programming/Examples/Lazy_Fibonacci
+  ((fn f3 [prev n]
+     (lazy-seq (cons prev (f3 (*' n prev) (inc n)))))
+   1 2))
+
+(defn ^:cli f3-seq-n
+  "Convenience fn for testing f3-seq from the CLI.
+   The factorial of n is the (dec n) element of the seq."
+  [n]
+  (nth f3-seq (dec n)))
+
+(defn ^:cli f3-seq-take
+  "Convenience fn for testing f3-seq from the CLI."
+  [n]
+  (take n f3-seq))
+
+
 (defn -main
   "Takes in two strings: the name of a fn to call, and the arg for
    that fn.
