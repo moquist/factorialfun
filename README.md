@@ -11,6 +11,8 @@ $ lein run f2 4
 $ lein run f0 21 # BOOM! Integer overflow.
 $ lein run f1 10000 # BOOM! Stack [probably] blows here. If it doesn't, try a bigger number.
 $ lein run f2 10000 # Try the same big number that eventually blew your stack when using f1.
+$ lein run f3-seq-n 4
+$ lein run f3-seq-take 20
 ```
 
 ## License
