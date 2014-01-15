@@ -87,6 +87,9 @@
 
    The 'let binding vector here is very convoluted and should raise eyebrows.
    TODO: refactor this
+   * use assert
+   * try (map-indexed...
+   * try (map while zipping in the results of (range)
 
    Returns nil."
   [f-str n & [seq-str]]
