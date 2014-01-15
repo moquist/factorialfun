@@ -1,6 +1,8 @@
 (ns factorialfun.core
   (:gen-class))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; factorial fns
 (defn ^:cli f0
   "This is the same as f1, but uses the non-auto-promoting * instead of *'.
    See http://clojuredocs.org/clojure_core/clojure.core/* and
@@ -46,65 +48,106 @@
        prod
        (recur (dec n) (*' n prod)))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; fns to take from seqs named on the CLI.
+(defn ^:cli seq-n
+  "Convenience fn for testing f3-seq from the CLI.
+   The factorial of n is the (dec n) element of the seq."
+  [n s]
+  (nth s (dec n)))
 
-(def f3-seq
-  ;; Creates a lazy sequence of factorials.
+(defn ^:cli seq-take
+  "Convenience fn for testing f3-seq from the CLI."
+  [n s]
+  (take n s))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; lazy seqs of factorials
+(def ^:cli f3-seq
   ;; With apologies to http://en.wikibooks.org/wiki/Clojure_Programming/Examples/Lazy_Fibonacci
   ((fn f3 [prev n]
      (lazy-seq (cons prev (f3 (*' n prev) (inc n)))))
    1 2))
 
-(defn ^:cli f3-seq-n
-  "Convenience fn for testing f3-seq from the CLI.
-   The factorial of n is the (dec n) element of the seq."
-  [n]
-  (nth f3-seq (dec n)))
-
-(defn ^:cli f3-seq-take
-  "Convenience fn for testing f3-seq from the CLI."
-  [n]
-  (take n f3-seq))
-
+(def ^:cli f4-seq
+  ;; Creates a lazy sequence of [position factorial] vectors.
+  ;; With even more apologies to http://en.wikibooks.org/wiki/Clojure_Programming/Examples/Lazy_Fibonacci
+   (lazy-cat
+    [[1 1] [2 2]]
+    (map (fn [[prev-n prev-p]]
+           (let [n (inc prev-n)
+                 prod (*' n prev-p)]
+             [n prod]))
+         (rest f4-seq))))
 
 (defn -main
   "Takes in two strings: the name of a fn to call, and the arg for
    that fn.
 
-   Gets the symbol of the first string and resolves it to a namespace.
-
-   Gets the symbol of 'f, rebinds 'f to the symbol value.
-
-   Resolves 'f to the 'factorialfun.core namespace, rebinds 'f to the
-   resolved 'f, which should now be a fn from above.
-
-   Ensures that 'f implements IFn, throws exception (with a helpful
-   message) if not.
-
-   Ensures that 'f is marked (according to our own metadata
-   convention) to be accessible from the CLI. See
-   http://clojure.org/metadata and
-   http://stackoverflow.com/questions/5592306/how-do-i-dynamically-find-metadata-for-a-clojure-function
-
-   Calls 'f with 'n, using 'time to print out the elapsed time.
-
-   Finally, prints out the result.
+   The 'let binding vector here is very convoluted and should raise eyebrows.
+   TODO: refactor this
 
    Returns nil."
-  [f-str n]
-  (let [f (symbol f-str)
+  [f-str n & [seq-str]]
+  (let [;; Get the symbol of the first CLI parameter string.
+        f (symbol f-str)
+
+        ;; Resolve the symbol to this namespace.
         f (ns-resolve 'factorialfun.core f)
+
+        ;; If f does not implement IFn, bail out.
         _ (if (not (ifn? f))
             (throw (Exception. (str f-str " is not a function!"))))
+
+        ;; Ensure that 'f is marked (according to our own metadata
+        ;; convention) to be accessible from the CLI. See
+        ;; http://clojure.org/metadata and
+        ;; http://stackoverflow.com/questions/5592306/how-do-i-dynamically-find-metadata-for-a-clojure-function
         _ (or (:cli (meta f))
               (throw (Exception. (str f-str " is not callable from the CLI."))))
+
+        ;; Get the Integer value of the second CLI parameter string.
         n (Integer. n)
-        factorial (time (f n))]
+
+        ;; Bind 'f to a fn that already has its first argument.
+        f (partial f n)
+
+        ;; If a seq name was passed as the optional third CLI
+        ;; parameter, get its symbol, resolve it to this namespace to
+        ;; get its var, and then get the value of the var (which is
+        ;; the seq itself).
+        ;; Then, if 's is a seq and is marked (according to our own
+        ;; metadata convention) to be accessible from the CLI (see
+        ;; same test above for 'f), bind 'f to an updated partial with
+        ;; the seq as an additional argument, and bind 'seq-disp to a
+        ;; string describing the seq.
+        ;; Else (if no seq name was passed on the CLI), bind 'f to the
+        ;; same value and 'seq-disp to the empty string since there's
+        ;; nothing here to describe.
+        [f seq-disp] (if (string? seq-str)
+                       (let [s (symbol seq-str)
+                             s-var (ns-resolve 'factorialfun.core s)
+                             s (var-get s-var)]
+                         (if (and (seq? s)
+                                  (:cli (meta s-var)))
+                           [(partial f s) (format "(from %s)" seq-str)]
+                           (throw (Exception. (str seq-str " is not an available sequence.")))))
+                       [f ""])
+
+        ;; Call f and bind the result to 'factorial, using 'time to print out how long it takes.
+        factorial (time (f))]
     (println
-     f-str "of" n "is"
+     (format "%s %s of %d is" f-str seq-disp n)
      factorial)))
 
 (comment
   ;; You must test with strings.
+  (factorialfun.core/-main "f0" "4")
   (factorialfun.core/-main "f1" "4")
   (factorialfun.core/-main "f2" "4")
+  (factorialfun.core/-main "f2" "4")
+  (factorialfun.core/-main "seq-n" "4" "f3-seq")
+  (factorialfun.core/-main "seq-take" "4" "f3-seq")
+  (factorialfun.core/-main "seq-n" "4" "f4-seq")
+  (factorialfun.core/-main "seq-take" "4" "f4-seq")
   )
