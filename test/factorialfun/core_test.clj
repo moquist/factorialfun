@@ -11,8 +11,14 @@
     (testing "f2"
       (is (= 24 (f2 4)))))
   (testing "seqs"
-    (testing "f3-seq-nth"
-      (is (= 24 (f3-seq-n 4))))
-    (testing "f3-seq-take"
-      (is (= '(1 2 6 24 120 720 5040) (f3-seq-take 7))))))
+    (testing "f3-seq"
+      (testing "seq-n"
+        (is (= 24 (seq-n 4 f3-seq))))
+      (testing "seq-take"
+        (is (= '(1 2 6 24 120 720 5040) (seq-take 7 f3-seq)))))
+    (testing "f4-seq"
+      (testing "seq-n"
+        (is (= [4 24] (seq-n 4 f4-seq))))
+      (testing "seq-take"
+        (is (= '([1 1] [2 2] [3 6] [4 24] [5 120] [6 720] [7 5040]) (seq-take 7 f4-seq)))))))
 
