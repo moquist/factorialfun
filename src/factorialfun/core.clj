@@ -51,13 +51,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; fns to take from seqs named on the CLI.
 (defn ^:cli seq-n
-  "Convenience fn for testing f3-seq from the CLI.
+  "Convenience fn for testing a sequence of factorials from the CLI.
    The factorial of n is the (dec n) element of the seq."
   [n s]
   (nth s (dec n)))
 
 (defn ^:cli seq-take
-  "Convenience fn for testing f3-seq from the CLI."
+  "Convenience fn for testing a sequence of factorials from the CLI."
   [n s]
   (take n s))
 
@@ -71,6 +71,7 @@
 
 (def ^:cli f4-seq
   ;; Creates a lazy sequence of [position factorial] vectors.
+  ;; This sequence is recursive on data.
   ;; With even more apologies to http://en.wikibooks.org/wiki/Clojure_Programming/Examples/Lazy_Fibonacci
    (lazy-cat
     [[1 1] [2 2]]
