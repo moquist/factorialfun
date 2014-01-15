@@ -100,8 +100,7 @@
         f (ns-resolve 'factorialfun.core f)
 
         ;; If f does not implement IFn, bail out.
-        _ (if (not (ifn? f))
-            (throw (Exception. (str f-str " is not a function!"))))
+        _ (assert (ifn? f))
 
         ;; Ensure that 'f is marked (according to our own metadata
         ;; convention) to be accessible from the CLI. See
