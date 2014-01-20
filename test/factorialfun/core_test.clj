@@ -20,5 +20,10 @@
       (testing "seq-n"
         (is (= [4 24] (seq-n 4 f4-seq))))
       (testing "seq-take"
-        (is (= '([1 1] [2 2] [3 6] [4 24] [5 120] [6 720] [7 5040]) (seq-take 7 f4-seq)))))))
+        (is (= '([1 1] [2 2] [3 6] [4 24] [5 120] [6 720] [7 5040]) (seq-take 7 f4-seq)))))
+    (testing "f5-seq"
+      (testing "seq-n"
+        (is (= 24 (seq-n 4 f5-seq))))
+      (testing "seq-take"
+        (is (= '(1 2 6 24 120 720 5040) (seq-take 7 f5-seq)))))))
 
