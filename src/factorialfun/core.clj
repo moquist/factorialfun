@@ -87,7 +87,6 @@
 
    The 'let binding vector here is very convoluted and should raise eyebrows.
    TODO: refactor this
-   * use assert
    * try (map-indexed...
    * try (map while zipping in the results of (range)
 
@@ -106,8 +105,7 @@
         ;; convention) to be accessible from the CLI. See
         ;; http://clojure.org/metadata and
         ;; http://stackoverflow.com/questions/5592306/how-do-i-dynamically-find-metadata-for-a-clojure-function
-        _ (or (:cli (meta f))
-              (throw (Exception. (str f-str " is not callable from the CLI."))))
+        _ (assert (:cli (meta f)))
 
         ;; Get the Integer value of the second CLI parameter string.
         n (Integer. n)
