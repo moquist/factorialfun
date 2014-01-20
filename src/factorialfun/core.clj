@@ -81,13 +81,23 @@
              [n prod]))
          (rest f4-seq))))
 
+(def ^:cli f5-seq
+  ;; Creates a lazy sequence of factorials.
+  ;; This sequence is recursive on data.
+   (lazy-cat
+    [1 2]
+    (map-indexed (fn [idx prev]
+                   (let [idx (+' 3 idx)
+                         next (*' idx prev)]
+                     next))
+                 (rest f5-seq))))
+
 (defn -main
   "Takes in two strings: the name of a fn to call, and the arg for
    that fn.
 
    The 'let binding vector here is very convoluted and should raise eyebrows.
    TODO: refactor this
-   * try (map-indexed...
    * try (map while zipping in the results of (range)
 
    Returns nil."
