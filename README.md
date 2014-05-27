@@ -1,4 +1,4 @@
-# factorialfun
+# factorialfun ![Build Status](https://codeship.io/projects/a989e080-c812-0131-bef6-7e50740c30bd/status)
 
 Demos of stack-consuming recursion and the 'recur special form to calculate factorials.
 
